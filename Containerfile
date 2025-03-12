@@ -1,4 +1,8 @@
-FROM quay.io/fedora/fedora-bootc:42
+FROM quay.io/fedora/fedora-bootc:41
+
+LABEL org.opencontainers.image.title="LockSmithUSB"
+LABEL org.opencontainers.image.authors="Roberto Bochet <r@robertobochet.me>"
+LABEL org.opencontainers.image.licenses="GPL-3.0-only"
 
 ARG HOSTNAME=locksmithusb
 ARG SSH_AUTHORIZED_KEYS
@@ -37,6 +41,9 @@ EOF
 
 # Reduce kernel log level printed on tty to warning
 RUN echo "kernel.printk=4" > /etc/sysctl.d/99-disable-kernel-print-logs.conf
+
+# Disable ssh password authentication
+RUN echo "PasswordAuthentication no" > /etc/ssh/sshd_config.d/10-disable-password-authentication.conf
 
 # Set global environment variables
 RUN echo "EDITOR=nvim" >> /etc/environment
