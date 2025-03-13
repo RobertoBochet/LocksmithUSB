@@ -47,7 +47,7 @@ jobs:
                   --label org.opencontainers.image.version="${VERSION-0.0.0+$SHORT_SHA}" \
 
       - name: Push dev image to github registry
-        if: !startsWith(github.event.ref, 'refs/tags/v')
+        if: ${{ ! startsWith(github.event.ref, 'refs/tags/v') }}
         run: |
           buildah push $IMAGE_TAG "docker://$IMAGE_NAME:$SHORT_SHA"
           buildah push $IMAGE_TAG "docker://$IMAGE_NAME:dev"
