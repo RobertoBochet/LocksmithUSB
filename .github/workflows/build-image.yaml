@@ -1,10 +1,10 @@
-name: Build container image
+name: "Build container image"
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
-  workflow_dispatch:
 
 jobs:
   build:
@@ -60,4 +60,3 @@ jobs:
           buildah push $IMAGE_TAG "docker://$IMAGE_NAME:${VERSIONS[0]}.${VERSIONS[1]}"
           buildah push $IMAGE_TAG "docker://$IMAGE_NAME:${VERSIONS[0]}.${VERSIONS[1]}.${VERSIONS[2]}"
           buildah push $IMAGE_TAG "docker://$IMAGE_NAME:latest"
-
