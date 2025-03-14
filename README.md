@@ -1,6 +1,6 @@
 # LocksmithUSB
 
-is an **immutable distro**(based on (Fedora bootc)[https://docs.fedoraproject.org/en-US/bootc/]) tough to be put on a **USB drive** and be booted everywhere to provide you some **useful tool** to repair broken systems.
+is an **immutable distro**(based on [Fedora bootc](https://docs.fedoraproject.org/en-US/bootc/)) tough to be put on a **USB drive** and be booted everywhere to provide you some **useful tool** to repair broken systems.
 
 ## What is bootc?
 
