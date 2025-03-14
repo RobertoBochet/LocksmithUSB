@@ -1,6 +1,6 @@
 FROM quay.io/fedora/fedora-bootc:41
 
-LABEL org.opencontainers.image.title="LockSmithUSB"
+LABEL org.opencontainers.image.title="LocksmithUSB"
 LABEL org.opencontainers.image.authors="Roberto Bochet <r@robertobochet.me>"
 LABEL org.opencontainers.image.licenses="GPL-3.0-only"
 
