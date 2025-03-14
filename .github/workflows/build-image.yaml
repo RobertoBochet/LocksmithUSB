@@ -1,0 +1,62 @@
+name: "Build container image"
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+    name: Build container image
+    runs-on: ubuntu-latest
+
+    container:
+      image: quay.io/buildah/stable:v1.39
+      env:
+        BUILDAH_FORMAT: docker
+        BUILDAH_ISOLATION: chroot
+        IMAGE_TAG: locksmithusb
+      options: --privileged
+
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Set variables
+        run: |
+          echo "IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+          echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_ENV"
+
+      - name: Set version variables
+        if: startsWith(github.event.ref, 'refs/tags/v')
+        run: |
+          VERSION=${GITHUB_REF_NAME/v/}
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v4
+
+      - name: Github registry login
+        run: buildah login -u "${{ github.repository_owner }}" -p "${{ secrets.GITHUB_TOKEN }}" "ghcr.io"
+
+      - name: Build image
+        run: |
+          buildah build -t $IMAGE_TAG --no-hosts --no-hostname \
+                  --label org.opencontainers.image.source="${{ github.server_url }}/${{ github.repository }}" \
+                  --label org.opencontainers.image.version="${VERSION-0.0.0+$SHORT_SHA}" \
+
+      - name: Push dev image to github registry
+        if: ${{ ! startsWith(github.event.ref, 'refs/tags/v') }}
+        run: |
+          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:$SHORT_SHA"
+          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:dev"
+
+      - name: Push image to github registry
+        if: startsWith(github.event.ref, 'refs/tags/v')
+        run: |
+          VERSIONS=(${VERSION//./ })
+          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:${VERSIONS[0]}"
+          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:${VERSIONS[0]}.${VERSIONS[1]}"
+          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:${VERSIONS[0]}.${VERSIONS[1]}.${VERSIONS[2]}"
+          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:latest"
