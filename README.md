@@ -1,6 +1,6 @@
 # LocksmithUSB
 
-is an **immutable distro**(based on [Fedora bootc](https://docs.fedoraproject.org/en-US/bootc/)) tough to be put on a **USB drive** and be booted everywhere to provide you some **useful tool** to repair broken systems.
+is an **immutable distro**(based on [Fedora bootc](https://docs.fedoraproject.org/en-US/bootc/)) designed to be put on a **USB drive** and booted anywhere to provide some **useful tools** to repair broken systems.
 
 ## What is bootc?
 
@@ -9,11 +9,13 @@ The obtained bootable container image can be run on a VM or a bare-metal machine
 
 To make this magic happen, we use [bootc](https://github.com/containers/bootc).
 
-> Transactional, in-place operating system updates using OCI/Docker container images. bootc is the key component in a broader mission of bootable containers.
+> Transactional, in-place operating system updates using OCI/Docker container images. 
+> bootc is the key component in a broader mission of bootable containers.
 
 ## Using
 
-If you want to build your personal **LocksmithUSB** I suggest to you forking this repository, so you can adapt it to your needs.
+If you want to build your personal **LocksmithUSB**, 
+I suggest to you forking this repository, so you can adapt it to your needs.
 
 ### Build (locally)
 
@@ -27,7 +29,7 @@ Pay attention: bootc relies on image is published on a public OCI registry, so c
 
 ### Installation
 
-The OCI image can be also used to install itself on a usb drive.
+The OCI image can be also used to install itself on n usb drive.
 
 ```bash
 podman run \
@@ -56,7 +58,9 @@ bootc status
 ```
 
 With the above command, yuo can check the current status of the system.
-In particular, you can find the reference to the current booted image (remember it respects the OCI standards) and the previous image(it can be used for a rollback). An output example follows
+In particular, you can find the reference to the current booted image (remember it respects the OCI standards) 
+and the previous image (it can be used for a rollback). 
+An output example follows
 
 ```text
 ● Booted image: ghcr.io/robertobochet/locksmithusb:latest
