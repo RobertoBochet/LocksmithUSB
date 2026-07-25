@@ -9,12 +9,12 @@ The obtained bootable container image can be run on a VM or a bare-metal machine
 
 To make this magic happen, we use [bootc](https://github.com/containers/bootc).
 
-> Transactional, in-place operating system updates using OCI/Docker container images. 
+> Transactional, in-place operating system updates using OCI/Docker container images.
 > bootc is the key component in a broader mission of bootable containers.
 
 ## Using
 
-If you want to build your personal **LocksmithUSB**, 
+If you want to build your personal **LocksmithUSB**,
 I suggest to you forking this repository, so you can adapt it to your needs.
 
 ### Build (locally)
@@ -58,8 +58,8 @@ bootc status
 ```
 
 With the above command, yuo can check the current status of the system.
-In particular, you can find the reference to the current booted image (remember it respects the OCI standards) 
-and the previous image (it can be used for a rollback). 
+In particular, you can find the reference to the current booted image (remember it respects the OCI standards)
+and the previous image (it can be used for a rollback).
 An output example follows
 
 ```text
