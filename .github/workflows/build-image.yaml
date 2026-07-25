@@ -5,6 +5,15 @@ on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    branches:
+      - main
 
 jobs:
   build:
@@ -12,11 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: quay.io/buildah/stable:v1.39
-      env:
-        BUILDAH_FORMAT: docker
-        BUILDAH_ISOLATION: chroot
-        IMAGE_TAG: locksmithusb
+      image: quay.io/podman/stable:v5.8.2@sha256:663e0dbf407987b7db3f20d3588c283a8228db17b282d2029a482d4d47e36964
       options: --privileged
 
     permissions:
@@ -24,39 +29,73 @@ jobs:
       contents: read
 
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install skopeo and rpm-ostree
+        run: dnf install -y skopeo rpm-ostree
+
+      - name: Configure containers storage on /mnt
+        run: |
+          mkdir -p /mnt/containers/storage
+          cat > /etc/containers/storage.conf <<'EOF'
+          [storage]
+          driver = "overlay"
+          runroot = "/mnt/containers/storage/runroot"
+          graphroot = "/mnt/containers/storage/graphroot"
+          [storage.options.overlay]
+          mountopt = "nodev,metacopy=on"
+          EOF
+          podman system reset -f || true
+
       - name: Set variables
         run: |
-          echo "IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
-          echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_ENV"
+          cat >> "$GITHUB_ENV"<< ENV
+          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          SHORT_SHA=${GITHUB_SHA:0:7}
+          ENV
 
       - name: Set version variables
         if: startsWith(github.event.ref, 'refs/tags/v')
         run: |
-          VERSION=${GITHUB_REF_NAME/v/}
-          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          VERSION=${GITHUB_REF_NAME#v}
 
-      - uses: actions/checkout@v4
+          cat >> "$GITHUB_ENV"<< ENV
+          VERSION=${VERSION}
+          VERSION_MINOR=${VERSION%.*}
+          VERSION_MAJOR=${VERSION%%.*}
+          ENV
 
       - name: Github registry login
-        run: buildah login -u "${{ github.repository_owner }}" -p "${{ secrets.GITHUB_TOKEN }}" "ghcr.io"
+        run: podman login -u "${{ github.repository_owner }}" -p "${{ secrets.GITHUB_TOKEN }}" "ghcr.io"
 
-      - name: Build image
+      - name: Build raw image
         run: |
-          buildah build -t $IMAGE_TAG --no-hosts --no-hostname \
+          podman build -t "$IMAGE_NAME:raw" --no-hosts --no-hostname \
                   --label org.opencontainers.image.source="${{ github.server_url }}/${{ github.repository }}" \
-                  --label org.opencontainers.image.version="${VERSION-0.0.0+$SHORT_SHA}" \
+                  --label org.opencontainers.image.version="${VERSION-0.0.0+$SHORT_SHA}" .
+
+      - name: Rechunk image
+        run: |
+          set -euo pipefail
+          rpm-ostree experimental compose build-chunked-oci \
+              --bootc \
+              --format-version=1 \
+              --from="$IMAGE_NAME:raw" \
+              --output containers-storage:"$IMAGE_NAME"
+
+      - name: "Warm up github registry layer cache (podman bug #27796)"
+        run: |
+          podman push "$IMAGE_NAME" "docker://$IMAGE_NAME:$SHORT_SHA"
 
       - name: Push dev image to github registry
-        if: ${{ ! startsWith(github.event.ref, 'refs/tags/v') }}
+        if: ${{ github.ref == 'ref/heads/main' }}
         run: |
-          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:$SHORT_SHA"
-          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:dev"
+          podman push "$IMAGE_NAME" "docker://$IMAGE_NAME:dev"
 
       - name: Push image to github registry
         if: startsWith(github.event.ref, 'refs/tags/v')
         run: |
-          VERSIONS=(${VERSION//./ })
-          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:${VERSIONS[0]}"
-          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:${VERSIONS[0]}.${VERSIONS[1]}"
-          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:${VERSIONS[0]}.${VERSIONS[1]}.${VERSIONS[2]}"
-          buildah push $IMAGE_TAG "docker://$IMAGE_NAME:latest"
+          podman push "$IMAGE_NAME" "docker://$IMAGE_NAME:$VERSION"
+          podman push "$IMAGE_NAME" "docker://$IMAGE_NAME:$VERSION_MINOR"
+          podman push "$IMAGE_NAME" "docker://$IMAGE_NAME:$VERSION_MAJOR"
+          podman push "$IMAGE_NAME" "docker://$IMAGE_NAME:latest"
