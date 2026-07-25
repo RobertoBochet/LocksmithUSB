@@ -1,0 +1,107 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "extends": [
+    ":dependencyDashboard",
+    ":configMigration",
+    "helpers:pinGitHubActionDigests"
+  ],
+
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 15,
+
+  "automerge": false,
+  "automergeType": "pr",
+  "automergeStrategy": "rebase",
+  "platformAutomerge": true,
+
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "",
+
+  "minimumReleaseAge": "3 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
+
+  "enabledManagers": [
+    "dockerfile",
+    "pre-commit",
+    "github-actions"
+  ],
+
+  "pre-commit": {
+    "enabled": true
+  },
+
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["/fedora-bootc$/"],
+      "matchUpdateTypes": ["major", "minor", "patch", "digest"],
+      "commitMessageAction": "bump",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "fedora",
+      "automerge": true
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["/fedora-bootc$/"],
+      "matchUpdateTypes": ["major"],
+      "commitMessageAction": "update",
+      "semanticCommitType": "feat",
+      "automerge": false
+    },
+
+    {
+      "matchManagers": ["pre-commit"],
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "groupName": "pre-commit hooks",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "pre-commit",
+      "commitMessageAction": "update",
+      "automerge": true
+    },
+    {
+      "matchManagers": ["pre-commit"],
+      "matchUpdateTypes": ["major"],
+      "groupName": null,
+      "automerge": false
+    },
+
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["major", "minor", "patch", "digest", "pinDigest"],
+      "semanticCommitType": "ci",
+      "semanticCommitScope": "",
+      "commitMessageAction": "update"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["action"],
+      "groupName": "workflow actions",
+      "automerge": true
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["container"],
+      "groupName": "workflow containers",
+      "automerge": true
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["major"],
+      "groupName": null,
+      "automerge": false
+    },
+
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["/^quay\\.io/"],
+      "minimumReleaseAge": null
+    },
+    // limit all dev tool updates to once a week
+    {
+      "matchManagers": ["pre-commit", "github-actions"],
+      "schedule": ["* * * * 1"]
+    }
+  ]
+}
