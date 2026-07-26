@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-bootc:41@sha256:8422f122a1567759c5dd5dcda2007e0ff8c01c1dfd67c4146364196c8e078e4c
+FROM quay.io/fedora/fedora-bootc:45@sha256:bc2541d1ad3b6dc4233e909a90ee385b543d78bfe4b42f7c42b2d52b39a1fcac
 
 LABEL org.opencontainers.image.title="LocksmithUSB"
 LABEL org.opencontainers.image.authors="Roberto Bochet <r@robertobochet.me>"
