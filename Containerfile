@@ -17,6 +17,7 @@ set -xeuo pipefail
 
 echo "■■■■■ Install packages ■■■■■"
 dnf install -y \
+    kmscon kmscon-freetype \
     tailscale \
     wireguard-tools \
     NetworkManager-wifi iwlegacy-firmware iwlwifi-dvm-firmware iwlwifi-mvm-firmware \
@@ -24,7 +25,6 @@ dnf install -y \
     zsh fish \
     tmux screen \
     vim neovim jq yq \
-    terminus-fonts-console \
     rsync tcpdump wget git strace \
     htop plocate tree \
     btrfs-progs snapper \
@@ -39,12 +39,20 @@ echo "■■■■■ DNF clean up ■■■■■"
 dnf clean all
 rm -rf /var/cache/* /var/log/* /var/lib/dnf
 
+echo "■■■■■ Install fonts ■■■■■"
+mkdir -p /usr/share/fonts/meslo-nerd-font
+curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.tar.xz \
+    | tar xJ -C /usr/share/fonts/meslo-nerd-font --no-same-owner
+
 echo "■■■■■ General tasks ■■■■■"
 cat <<EOF > /etc/hosts
 127.0.0.1   $HOSTNAME
 ::1         $HOSTNAME
 EOF
 echo "$HOSTNAME" > /etc/hostname
+
+echo "■■■■■ Remove transient files ■■■■■"
+rm -rf /run/* /tmp/* || true
 
 echo "■■■■■ Build complete ■■■■■"
 EORUN
