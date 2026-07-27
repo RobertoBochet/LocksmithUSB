@@ -1,0 +1,26 @@
+name: "PR checks"
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    branches:
+      - main
+
+jobs:
+  check-build:
+    name: "Build image"
+    runs-on: ubuntu-latest
+
+    container:
+      image: quay.io/podman/stable:v5.8.2@sha256:663e0dbf407987b7db3f20d3588c283a8228db17b282d2029a482d4d47e36964
+      options: --privileged
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: "Build image"
+        run: |
+          podman build --no-hosts --no-hostname .
