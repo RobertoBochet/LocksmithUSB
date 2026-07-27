@@ -18,21 +18,26 @@ set -xeuo pipefail
 echo "■■■■■ Install packages ■■■■■"
 dnf install -y \
     kmscon kmscon-freetype \
-    tailscale \
-    wireguard-tools \
-    NetworkManager-wifi iwlegacy-firmware iwlwifi-dvm-firmware iwlwifi-mvm-firmware \
-    cloud-init qemu-guest-agent \
     zsh fish \
     tmux screen \
-    vim neovim jq yq \
-    rsync tcpdump wget git strace \
-    htop plocate tree \
+    toolbox \
+    vim neovim \
+    jq yq \
+    git strace \
+    tailscale wireguard-tools \
+    NetworkManager-wifi \
+    iwlegacy-firmware iwlwifi-dvm-firmware iwlwifi-mvm-firmware \
+    tcpdump wget rsync \
+    iperf3 nmap mtr \
+    smartmontools gdisk hdparm parted \
     btrfs-progs snapper \
-    smartmontools gdisk \
-    pciutils nfs-utils \
+    testdisk ddrescue pv \
+    pciutils nfs-utils sshfs \
+    dmidecode usbutils sysstat sysbench \
+    htop plocate tree \
     arch-install-scripts \
     cri-tools kubectl \
-    toolbox \
+    cloud-init qemu-guest-agent \
     cowsay figlet lolcat
 
 echo "■■■■■ DNF clean up ■■■■■"
