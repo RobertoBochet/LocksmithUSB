@@ -5,6 +5,7 @@ LABEL org.opencontainers.image.authors="Roberto Bochet <r@robertobochet.me>"
 LABEL org.opencontainers.image.licenses="GPL-3.0-only"
 
 ARG HOSTNAME=locksmithusb
+ARG PRETTY_NAME=LocksmithUSB
 
 SHELL ["/usr/bin/bash", "-c"]
 
@@ -55,6 +56,7 @@ cat <<EOF > /etc/hosts
 ::1         $HOSTNAME
 EOF
 echo "$HOSTNAME" > /etc/hostname
+sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"$PRETTY_NAME\"/" /usr/lib/os-release
 
 echo "■■■■■ Remove transient files ■■■■■"
 rm -rf /run/* /tmp/* || true
