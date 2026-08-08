@@ -36,18 +36,10 @@
     {
       "matchDatasources": ["docker"],
       "matchPackageNames": ["/fedora-bootc$/"],
-      "matchUpdateTypes": ["major", "minor", "patch", "digest"],
-      "commitMessageAction": "bump",
-      "semanticCommitType": "chore",
-      "semanticCommitScope": "fedora",
-      "automerge": true
-    },
-    {
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["/fedora-bootc$/"],
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": ["major", "minor", "patch"],
       "commitMessageAction": "update",
       "semanticCommitType": "feat",
+      "semanticCommitScope": "fedora",
       "automerge": false
     },
 
