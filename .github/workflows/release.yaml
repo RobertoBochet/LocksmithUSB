@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: quay.io/podman/stable:v5.8.4@sha256:3b9f8367aa3e71b88914ea391f083fccc58c133d07b72f506e7104072ae4a6ed
+      image: quay.io/podman/stable:v5.8.4@sha256:892ad559351bcda730529b256a4cdb96ecbbbbbcd3bb68e404542874f5b8ddc5
       options: --privileged
 
     permissions:
