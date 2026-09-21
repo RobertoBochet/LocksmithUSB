@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: quay.io/podman/stable:v5.8.4@sha256:7e861e21f62bc8fb47089f6c4f3d9bb0c94aa414dbc63c81f9fada5aaaca7e65
+      image: quay.io/podman/stable:v5.8.7@sha256:f345d8d4fddea244d3a1ced27bcec82d14cc9e32cb5ead7f5882b0baf59dc8b0
       options: --privileged
 
     steps:
